@@ -1,0 +1,4 @@
+rootProject.name = 'simple-precedence-grammar'
+include 'app'
+include 'grammar-lib'
+
