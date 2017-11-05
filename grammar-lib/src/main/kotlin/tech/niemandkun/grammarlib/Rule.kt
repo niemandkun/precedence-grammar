@@ -3,7 +3,7 @@ package tech.niemandkun.grammarlib
 class Rule(val nonterminal: Nonterminal, val production: List<Symbol>) {
     val isErasing get() = production.isEmpty()
 
-    override fun toString(): String = "$nonterminal -> ${production.joinToString()}"
+    override fun toString(): String = "$nonterminal -> ${production.joinToString(separator = "")}"
 
     override fun equals(other: Any?): Boolean =
             other is Rule && other.nonterminal == nonterminal && other.production == production

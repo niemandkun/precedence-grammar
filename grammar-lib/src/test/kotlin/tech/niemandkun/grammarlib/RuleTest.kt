@@ -1,3 +1,5 @@
+package tech.niemandkun.grammarlib
+
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
 import org.junit.Test

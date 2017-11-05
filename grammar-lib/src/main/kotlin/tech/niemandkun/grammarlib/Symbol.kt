@@ -1,8 +1,17 @@
 package tech.niemandkun.grammarlib
 
-open class Symbol(open val symbol: Char) {
+open class Symbol(open val symbol: Char) : Comparable<Symbol> {
+    override fun compareTo(other: Symbol): Int =
+            if (this.symbol.isDigit() && !other.symbol.isDigit()) 1
+            else if (!this.symbol.isDigit() && other.symbol.isDigit()) -1
+            else this.symbol.compareTo(other.symbol)
+
+    override final fun toString(): String = symbol.toString()
+
     companion object {
         val LAMBDA = Terminal('\\')
+        val END_OF_LINE = Terminal('$')
+        val START_OF_LINE = Terminal('^')
 
         fun terminals(symbols: CharSequence): List<Terminal> = symbols.map { Terminal(it) }
 

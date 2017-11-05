@@ -12,7 +12,7 @@ class Grammar(val rules: List<Rule>) {
                 .distinct()
 
     val isUniquelyInversible = rules
-            .map { rule -> Pair(rule.production, rules.filter { it != rule }.map { it.production })}
+            .map { rule -> rule.production to rules.filter { it != rule }.map { it.production }}
             .all { pair -> pair.second.all { it != pair.first } }
 
     val hasErasingRules = rules
@@ -20,39 +20,58 @@ class Grammar(val rules: List<Rule>) {
 
     val axiom = nonterminals[0]
 
-    val first = findFirstSets({ it })
+    val symbols get() = nonterminals + terminals.sortedBy { it }
 
-    val last = findFirstSets({ it.reversed() })
+    private val first = findFirstSets({ it })
+
+    private val last = findFirstSets({ it.reversed() })
 
     private fun findFirstSets(direction: (List<Symbol>) -> List<Symbol>): Map<Symbol, Set<Symbol>> {
         val first = mutableMapOf<Symbol, MutableSet<Symbol>>()
 
-        terminals.forEach { first[it] = mutableSetOf(it as Symbol) }
-        val hasChanges = nonterminals.associateBy({ it }, { true }).toMutableMap()
+        terminals.forEach { first[it] = mutableSetOf() }
+        val hasChanges = nonterminals.associate { it to true }.toMutableMap()
 
         while (hasChanges.values.any { it }) {
             hasChanges.clear()
 
             rules.forEach { rule ->
-                val firstOfNonterminal = first[rule.nonterminal] ?: mutableSetOf()
-                first[rule.nonterminal] = firstOfNonterminal
+                val currentFirst = first[rule.nonterminal] ?: mutableSetOf()
+                first[rule.nonterminal] = currentFirst
 
                 for (symbol in direction(rule.production)) {
                     val firstOfSymbol = first[symbol] ?: mutableSetOf()
                     first[symbol] = firstOfSymbol
 
-                    hasChanges[rule.nonterminal] = hasChanges[symbol] ?: false
-                            || firstOfNonterminal.addAll(firstOfSymbol)
-                            || firstOfNonterminal.add(symbol)
+                    val firstAdded = currentFirst.addAll(firstOfSymbol)
+                    val symbolAdded = currentFirst.add(symbol)
+
+                    hasChanges[rule.nonterminal] = (hasChanges[symbol] ?: false) || firstAdded || symbolAdded
 
                     if (!firstOfSymbol.contains(Symbol.LAMBDA)) {
-                        break;
+                        break
                     }
                 }
             }
         }
 
         return first;
+    }
+
+    fun first(symbol: Symbol): Collection<Symbol> {
+        return first[symbol] ?: emptySet()
+    }
+
+    fun firstOrEqual(symbol: Symbol): Collection<Symbol> {
+        return first(symbol) + symbol
+    }
+
+    fun last(symbol: Symbol): Collection<Symbol> {
+        return last[symbol] ?: emptySet()
+    }
+
+    fun lastOrEqual(symbol: Symbol): Collection<Symbol> {
+        return last(symbol) + symbol
     }
 
     override fun toString(): String = rules.joinToString(separator = "\n")
