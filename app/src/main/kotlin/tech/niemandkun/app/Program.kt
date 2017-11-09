@@ -1,7 +1,7 @@
 package tech.niemandkun.app
 
 import tech.niemandkun.grammarlib.Grammar
-import tech.niemandkun.grammarlib.Rule
+import tech.niemandkun.grammarlib.GrammarRule
 
 fun main(args: Array<String>) {
     val input = listOf(
@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
             "acdc"
     )
 
-    val rules = input.takeWhile { !it.isEmpty() }.map { Rule.parse(it) }
+    val rules = input.takeWhile { !it.isEmpty() }.map { GrammarRule.parse(it) }
     val grammar = Grammar(rules)
 
     println(grammar)

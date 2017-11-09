@@ -1,4 +1,4 @@
-package tech.niemandkun.grammarlib
+package tech.niemandkun.parser.precedence
 
 enum class Precedence {
     LESS,

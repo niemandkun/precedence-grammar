@@ -1,13 +1,13 @@
 package tech.niemandkun.grammarlib
 
-class Grammar(val rules: List<Rule>) {
-    val terminals: List<Terminal> = rules
+class Grammar(val rules: List<GrammarRule>) {
+    val terminals = rules
                 .flatMap { it.production }
                 .filter { it is Terminal }
                 .map { it as Terminal }
                 .distinct()
 
-    val nonterminals: List<Nonterminal> = rules
+    val nonterminals = rules
                 .map { it.nonterminal }
                 .distinct()
 
@@ -56,6 +56,10 @@ class Grammar(val rules: List<Rule>) {
         }
 
         return first;
+    }
+
+    fun findRuleBy(production: List<Symbol>): GrammarRule? {
+        return rules.firstOrNull { it.production == production }
     }
 
     fun first(symbol: Symbol): Collection<Symbol> {

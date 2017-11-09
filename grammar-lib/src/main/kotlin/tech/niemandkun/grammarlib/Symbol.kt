@@ -1,6 +1,6 @@
 package tech.niemandkun.grammarlib
 
-open class Symbol(open val symbol: Char) : Comparable<Symbol> {
+abstract class Symbol(open val symbol: Char) : Comparable<Symbol> {
     override fun compareTo(other: Symbol): Int =
             if (this.symbol.isDigit() && !other.symbol.isDigit()) 1
             else if (!this.symbol.isDigit() && other.symbol.isDigit()) -1
@@ -19,6 +19,6 @@ open class Symbol(open val symbol: Char) : Comparable<Symbol> {
 
         fun symbols(symbols: CharSequence): List<Symbol> = symbols.map { parse(it) }
 
-        fun parse(char: Char): Symbol = if (char.isUpperCase()) Nonterminal(char) else Terminal(char)
+        private fun parse(char: Char): Symbol = if (char.isUpperCase()) Nonterminal(char) else Terminal(char)
     }
 }

@@ -17,18 +17,18 @@ class GrammarTest : BaseGrammarTest() {
                 "A"
         )
 
-        val rules = input.map { Rule.parse(it) }
+        val rules = input.map { GrammarRule.parse(it) }
 
         val grammar = Grammar(rules)
 
         grammar.rules shouldEqual listOf(
-                Rule(Nonterminal('S'), listOf(Terminal('a'), Nonterminal('A'), Terminal('b'))),
-                Rule(Nonterminal('A'), listOf(Terminal('b'), Nonterminal('S'), Terminal('a'))),
-                Rule(Nonterminal('A'), listOf(Terminal('b'))),
-                Rule(Nonterminal('A'), listOf(Terminal('a'))),
-                Rule(Nonterminal('A'), listOf(Terminal('c'))),
-                Rule(Nonterminal('A'), listOf()),
-                Rule(Nonterminal('A'), listOf())
+                GrammarRule(Nonterminal('S'), listOf(Terminal('a'), Nonterminal('A'), Terminal('b'))),
+                GrammarRule(Nonterminal('A'), listOf(Terminal('b'), Nonterminal('S'), Terminal('a'))),
+                GrammarRule(Nonterminal('A'), listOf(Terminal('b'))),
+                GrammarRule(Nonterminal('A'), listOf(Terminal('a'))),
+                GrammarRule(Nonterminal('A'), listOf(Terminal('c'))),
+                GrammarRule(Nonterminal('A'), listOf()),
+                GrammarRule(Nonterminal('A'), listOf())
         )
 
         grammar.terminals shouldEqual Symbol.terminals("abc")
@@ -42,10 +42,10 @@ class GrammarTest : BaseGrammarTest() {
     fun grammar_parsing_shouldWork2() {
         with(grammar("S SdAb", "S c", "A SS", "A b")) {
             rules shouldEqual listOf(
-                    Rule(S, listOf(S, d, A, b)),
-                    Rule(S, listOf(c)),
-                    Rule(A, listOf(S, S)),
-                    Rule(A, listOf(b))
+                    GrammarRule(S, listOf(S, d, A, b)),
+                    GrammarRule(S, listOf(c)),
+                    GrammarRule(A, listOf(S, S)),
+                    GrammarRule(A, listOf(b))
                 )
         }
     }

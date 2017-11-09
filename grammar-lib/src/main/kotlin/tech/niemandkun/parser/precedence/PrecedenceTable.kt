@@ -1,5 +1,8 @@
-package tech.niemandkun.grammarlib
+package tech.niemandkun.parser.precedence
 
+import tech.niemandkun.grammarlib.Grammar
+import tech.niemandkun.grammarlib.Symbol
+import tech.niemandkun.grammarlib.Terminal
 import tech.niemandkun.utils.bigrams
 import tech.niemandkun.utils.toMultiMap
 
@@ -28,7 +31,6 @@ class PrecedenceTable(grammar: Grammar) {
                         .flatMap { it.production.bigrams() }
                         .flatMap { pair -> grammar.first(pair.second).map { pair.first to it } }
                         .plus(grammar.firstOrEqual(grammar.axiom).map { Symbol.START_OF_LINE to it })
-                        .plus(Symbol.START_OF_LINE to Symbol.END_OF_LINE)
                         .associate { it to Precedence.LESS }
 
         private fun getPrecedenceGreater(grammar: Grammar): Map<Pair<Symbol, Symbol>, Precedence> =

@@ -3,11 +3,8 @@ package tech.niemandkun.grammarlib
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
 import org.junit.Test
-import tech.niemandkun.grammarlib.Nonterminal
-import tech.niemandkun.grammarlib.Rule
-import tech.niemandkun.grammarlib.Symbol
 
-class RuleTest {
+class GrammarRuleTest {
     @Test
     fun rules_parsing_shouldWork() {
         runParseTest(
@@ -57,24 +54,24 @@ class RuleTest {
     }
 
     private fun runParseTest(input: String, nonterminal: Char, symbols: String) {
-        Rule.parse(input) shouldEqual Rule(Nonterminal(nonterminal), Symbol.symbols(symbols))
+        GrammarRule.parse(input) shouldEqual GrammarRule(Nonterminal(nonterminal), Symbol.symbols(symbols))
     }
 
     @Test
     fun rules_shouldBeEqual_ifTerminalAndProductionAreTheSame() {
-        Rule(Nonterminal('S'), Symbol.nonterminals("adsf")) shouldEqual
-                Rule(Nonterminal('S'), Symbol.nonterminals("adsf"))
+        GrammarRule(Nonterminal('S'), Symbol.nonterminals("adsf")) shouldEqual
+                GrammarRule(Nonterminal('S'), Symbol.nonterminals("adsf"))
     }
 
     @Test
     fun rules_shouldBeNotEqual_ifTerminalsDiffer() {
-        Rule(Nonterminal('S'), Symbol.nonterminals("adsf")) shouldNotEqual
-                Rule(Nonterminal('A'), Symbol.nonterminals("adsf"))
+        GrammarRule(Nonterminal('S'), Symbol.nonterminals("adsf")) shouldNotEqual
+                GrammarRule(Nonterminal('A'), Symbol.nonterminals("adsf"))
     }
 
     @Test
     fun rules_shouldBeNotEqual_ifProductionDiffer() {
-        Rule(Nonterminal('S'), Symbol.nonterminals("qwer")) shouldNotEqual
-                Rule(Nonterminal('S'), Symbol.nonterminals("adsf"))
+        GrammarRule(Nonterminal('S'), Symbol.nonterminals("qwer")) shouldNotEqual
+                GrammarRule(Nonterminal('S'), Symbol.nonterminals("adsf"))
     }
 }
