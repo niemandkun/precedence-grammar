@@ -8,6 +8,7 @@ import tech.niemandkun.grammarlib.Symbol
 import tech.niemandkun.parser.precedence.Precedence
 import tech.niemandkun.parser.precedence.PrecedenceParserState
 import tech.niemandkun.parser.precedence.PrecedenceStateMachine
+import kotlin.test.assertFailsWith
 
 class StateMachineTest : BaseGrammarTest() {
     @Test
@@ -18,6 +19,7 @@ class StateMachineTest : BaseGrammarTest() {
         val table = stateMachine.table
 
         val firstState = stateMachine.init("ecdb")
+        firstState.isTerminating shouldBe false
 
         assert(firstState,
                 emptyList(),
@@ -25,6 +27,7 @@ class StateMachineTest : BaseGrammarTest() {
                 "ecdb$")
 
         val secondState = stateMachine.step(firstState)
+        secondState.isTerminating shouldBe false
 
         assert(secondState,
                 listOf(table[Symbol.START_OF_LINE, e]),
@@ -33,6 +36,7 @@ class StateMachineTest : BaseGrammarTest() {
         )
 
         val thirdState = stateMachine.step(secondState)
+        thirdState.isTerminating shouldBe false
 
         assert(thirdState,
                 listOf(table[Symbol.START_OF_LINE, e], table[e, c]),
@@ -41,6 +45,7 @@ class StateMachineTest : BaseGrammarTest() {
         )
 
         val fourthState = stateMachine.step(thirdState)
+        fourthState.isTerminating shouldBe false
 
         assert(fourthState,
                 listOf(table[Symbol.START_OF_LINE, e], table[e, A]),
@@ -49,6 +54,7 @@ class StateMachineTest : BaseGrammarTest() {
         )
 
         val fifthState = stateMachine.step(fourthState)
+        fifthState.isTerminating shouldBe false
 
         assert(fifthState,
                 listOf(table[Symbol.START_OF_LINE, e], table[e, A], table[A, d]),
@@ -57,6 +63,7 @@ class StateMachineTest : BaseGrammarTest() {
         )
 
         val sixthState = stateMachine.step(fifthState)
+        sixthState.isTerminating shouldBe false
 
         assert(sixthState,
                 listOf(table[Symbol.START_OF_LINE, e], table[e, A], table[A, S]),
@@ -65,6 +72,7 @@ class StateMachineTest : BaseGrammarTest() {
         )
 
         val sevenState = stateMachine.step(sixthState)
+        sevenState.isTerminating shouldBe false
 
         assert(sevenState,
                 listOf(table[Symbol.START_OF_LINE, e], table[e, A], table[A, S], table[S, b]),
@@ -72,9 +80,8 @@ class StateMachineTest : BaseGrammarTest() {
                 "$"
         )
 
-        sevenState.isTerminating shouldBe false
-
         val eighthState = stateMachine.step(sevenState)
+        eighthState.isTerminating shouldBe false
 
         assert(eighthState,
                 listOf(table[Symbol.START_OF_LINE, S]),
@@ -82,17 +89,66 @@ class StateMachineTest : BaseGrammarTest() {
                 "$"
         )
 
-        eighthState.isTerminating shouldBe false
+        val ninthState = stateMachine.step(eighthState)
+        ninthState.isTerminating shouldBe true
 
-        val nineState = stateMachine.step(eighthState)
-
-        assert(nineState,
+        assert(ninthState,
                 listOf(table[Symbol.START_OF_LINE, S], table[S, Symbol.END_OF_LINE]),
                 listOf(Symbol.START_OF_LINE, S, Symbol.END_OF_LINE),
                 ""
         )
+    }
 
-        nineState.isTerminating shouldBe true
+    @Test
+    fun testParsingError() {
+        val grammar = grammar("S eASb", "S d", "A Ac", "A c")
+        val stateMachine = PrecedenceStateMachine(grammar)
+
+        val table = stateMachine.table
+
+        val firstState = stateMachine.init("ecdc")
+        firstState.isTerminating shouldBe false
+
+        assert(firstState,
+                emptyList(),
+                listOf(Symbol.START_OF_LINE),
+                "ecdc$")
+
+        val secondState = stateMachine.step(firstState)
+        secondState.isTerminating shouldBe false
+
+        assert(secondState,
+                listOf(table[Symbol.START_OF_LINE, e]),
+                listOf(Symbol.START_OF_LINE, e),
+                "cdc$")
+
+        val thirdState = stateMachine.step(secondState)
+        thirdState.isTerminating shouldBe false
+
+        assert(thirdState,
+                listOf(table[Symbol.START_OF_LINE, e], table[e, c]),
+                listOf(Symbol.START_OF_LINE, e, c),
+                "dc$")
+
+        val fourthState = stateMachine.step(thirdState)
+        fourthState.isTerminating shouldBe false
+
+        assert(fourthState,
+                listOf(table[Symbol.START_OF_LINE, e], table[e, A]),
+                listOf(Symbol.START_OF_LINE, e, A),
+                "dc$")
+
+        val fifthState = stateMachine.step(fourthState)
+        fifthState.isTerminating shouldBe false
+
+        assert(fifthState,
+                listOf(table[Symbol.START_OF_LINE, e], table[e, A], table[A, d]),
+                listOf(Symbol.START_OF_LINE, e, A, d),
+                "c$")
+
+        assertFailsWith(IllegalStateException::class, {
+            stateMachine.step(fifthState)
+        })
     }
 
     private fun assert(state: PrecedenceParserState, precedence: List<Set<Precedence>>, stack: List<Symbol>, input: String) {

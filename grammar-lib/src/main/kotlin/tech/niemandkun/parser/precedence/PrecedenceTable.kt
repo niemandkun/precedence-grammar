@@ -4,9 +4,11 @@ import tech.niemandkun.grammarlib.Grammar
 import tech.niemandkun.grammarlib.Symbol
 import tech.niemandkun.grammarlib.Terminal
 import tech.niemandkun.utils.bigrams
+import tech.niemandkun.utils.cartesianSquare
+import tech.niemandkun.utils.isSuffixOf
 import tech.niemandkun.utils.toMultiMap
 
-class PrecedenceTable(grammar: Grammar) {
+class PrecedenceTable(private val grammar: Grammar) {
     private val precedence =
             getPrecedenceEqual(grammar).toMultiMap() +
             getPrecedenceLess(grammar) +
@@ -16,8 +18,64 @@ class PrecedenceTable(grammar: Grammar) {
         return precedence[first to second] ?: emptySet()
     }
 
+    private fun getNullable(first: Symbol?, second: Symbol?): Set<Precedence> {
+        return if (first != null && second != null) {
+            get(first, second)
+        } else {
+            emptySet()
+        }
+    }
+
+    fun isSimple(): Boolean {
+        return grammar.isUniquelyInversible
+                && !grammar.hasErasingRules
+                && precedence.values.all { it.size < 2 }
+    }
+
+    fun isWeak(): Boolean {
+        return grammar.isUniquelyInversible
+                && !grammar.hasErasingRules
+                && precedence.values.all { it.size < 2 || Precedence.GREATER !in it }
+                && grammar.rules
+                .cartesianSquare()
+                .all {
+                    !it.first.production.isSuffixOf(it.second.production) ||
+                            getNullable(
+                                    it.second.production.reversed().drop(it.first.production.size).firstOrNull(),
+                                    it.first.nonterminal
+                            ).isEmpty()
+                }
+    }
+
     override fun toString(): String {
-        return precedence.toString()
+        val columnWidth = mutableMapOf<Symbol, Int>()
+
+        for ((symbols, relation) in precedence) {
+            if (columnWidth.getOrDefault(symbols.second, 0) < relation.size) {
+                columnWidth[symbols.second] = relation.size
+            }
+        }
+
+        val sb = StringBuilder(" ")
+
+        (grammar.symbols + Symbol.END_OF_LINE).forEach {
+            sb.append(" ").append(it.toString().padEnd(columnWidth.getOrDefault(it, 1)))
+        }
+
+        (grammar.symbols + Symbol.START_OF_LINE).forEach {
+            sb.appendln()
+            sb.append(it.toString())
+            for (other in grammar.symbols + Symbol.END_OF_LINE) {
+                sb.append(" ").append(getRelationStr(it, other).padEnd(columnWidth.getOrDefault(other, 1)))
+            }
+        }
+
+        return sb.toString()
+    }
+
+    private fun getRelationStr(first: Symbol, second: Symbol): String {
+        return if (get(first, second).isEmpty()) "."
+        else get(first, second).sortedBy { it.ordinal }.joinToString(separator = "")
     }
 
     companion object {

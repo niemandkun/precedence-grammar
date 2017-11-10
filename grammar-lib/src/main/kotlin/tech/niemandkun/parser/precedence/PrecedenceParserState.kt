@@ -26,7 +26,6 @@ class PrecedenceParserState(
         return if (isProductStart(peekPrecedence())) {
             emptyList()
         } else {
-            println()
             stack.reversed()
                     .bigrams()
                     .takeUntil { !isProductStart(table[it.second, it.first]) }
@@ -70,6 +69,10 @@ class PrecedenceParserState(
                 input
         )
     }
+
+    override fun toString() = listOf(stack.joinToString(separator = ""), input)
+            .filter { !it.isEmpty() }
+            .joinToString(separator = " ")
 
     companion object {
         fun init(table: PrecedenceTable, axiom: Symbol, input: String) =
