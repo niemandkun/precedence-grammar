@@ -2,22 +2,26 @@ package tech.niemandkun.parser
 
 class Parser<TState : ParserState>(private val stateMachine: StateMachine<TState>) {
     fun parse(input: String, callback: Callback) {
-        Runner(input)
+        Runner(stateMachine.init(input))
                 .forEach { when(it) {
                     is ParserState -> callback.onStep(it)
                     is Throwable -> callback.onError(it)
                 } }
-        callback.onEnd()
     }
 
-    inner class Runner(input: String) : Iterator<Any> {
-        private var currentState = stateMachine.init(input)
+    inner class Runner(initialState: TState) : Iterator<Any> {
+        private var currentState: TState = initialState
+        private var isRunning = false
         private var isError = false
 
         override fun hasNext() = !currentState.isTerminating && !isError
 
         override fun next() = try {
-            currentState = stateMachine.step(currentState)
+            if (!isRunning) {
+                isRunning = true
+            } else {
+                currentState = stateMachine.step(currentState)
+            }
             currentState
         } catch (error: Throwable) {
             isError = true
@@ -28,6 +32,5 @@ class Parser<TState : ParserState>(private val stateMachine: StateMachine<TState
     interface Callback {
         fun onStep(state: ParserState)
         fun onError(error: Throwable)
-        fun onEnd()
     }
 }
