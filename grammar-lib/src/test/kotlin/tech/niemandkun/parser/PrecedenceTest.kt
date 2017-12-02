@@ -211,11 +211,4 @@ class PrecedenceTest : BaseGrammarTest() {
         table[Symbol.START_OF_LINE, d] shouldEqual LESS
         table[Symbol.START_OF_LINE, Symbol.END_OF_LINE] shouldEqual NONE
     }
-
-    companion object {
-        val NONE = emptySet<Precedence>()
-        val LESS = setOf(Precedence.LESS)
-        val GREATER = setOf(Precedence.GREATER)
-        val EQUAL = setOf(Precedence.EQUAL)
-    }
 }

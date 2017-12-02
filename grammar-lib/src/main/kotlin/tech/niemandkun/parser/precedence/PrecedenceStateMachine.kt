@@ -12,11 +12,8 @@ class PrecedenceStateMachine(private val grammar: Grammar) : StateMachine<Preced
 
     override fun step(state: PrecedenceParserState): PrecedenceParserState {
         return if (state.isReducible) {
-            val production = state.getProduction()
-            if (production == listOf(grammar.axiom)) {
-                return state.shift()
-            }
-            val rule = grammar.findRuleBy(production) ?: throw IllegalStateException(production.toString())
+            val production = state.getProduction(grammar.rules)
+            val rule = grammar.findRuleBy(production)
             state.reduce(rule)
         } else {
             state.shift()

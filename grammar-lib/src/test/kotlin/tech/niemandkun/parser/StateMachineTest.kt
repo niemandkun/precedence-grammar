@@ -89,8 +89,12 @@ class StateMachineTest : BaseGrammarTest() {
                 "$"
         )
 
+        println(eighthState)
+
         val ninthState = stateMachine.step(eighthState)
         ninthState.isTerminating shouldBe true
+
+        println(ninthState)
 
         assert(ninthState,
                 listOf(table[Symbol.START_OF_LINE, S], table[S, Symbol.END_OF_LINE]),

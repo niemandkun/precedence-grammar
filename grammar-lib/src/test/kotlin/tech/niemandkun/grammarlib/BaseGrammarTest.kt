@@ -1,5 +1,7 @@
 package tech.niemandkun.grammarlib
 
+import tech.niemandkun.parser.precedence.Precedence
+
 open class BaseGrammarTest {
     fun grammar(vararg rules: String) = Grammar(rules.map { GrammarRule.parse(it) })
 
@@ -10,5 +12,10 @@ open class BaseGrammarTest {
         val c = Terminal('c')
         val d = Terminal('d')
         val e = Terminal('e')
+
+        val NONE = emptySet<Precedence>()
+        val LESS = setOf(Precedence.LESS)
+        val GREATER = setOf(Precedence.GREATER)
+        val EQUAL = setOf(Precedence.EQUAL)
     }
 }

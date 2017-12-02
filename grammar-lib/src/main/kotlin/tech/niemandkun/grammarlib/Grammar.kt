@@ -58,8 +58,8 @@ class Grammar(val rules: List<GrammarRule>) {
         return first;
     }
 
-    fun findRuleBy(production: List<Symbol>): GrammarRule? {
-        return rules.firstOrNull { it.production == production }
+    fun findRuleBy(production: List<Symbol>): GrammarRule {
+        return rules.first { it.production == production }
     }
 
     fun first(symbol: Symbol): Collection<Symbol> {
