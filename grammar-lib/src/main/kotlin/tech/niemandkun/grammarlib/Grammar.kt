@@ -46,7 +46,9 @@ class Grammar(val rules: List<GrammarRule>) {
                     val firstAdded = currentFirst.addAll(firstOfSymbol)
                     val symbolAdded = currentFirst.add(symbol)
 
-                    hasChanges[rule.nonterminal] = (hasChanges[symbol] ?: false) || firstAdded || symbolAdded
+                    hasChanges[rule.nonterminal] =
+                            (hasChanges[rule.nonterminal] ?: false)
+                            || (hasChanges[symbol] ?: false) || firstAdded || symbolAdded
 
                     if (!firstOfSymbol.contains(Symbol.LAMBDA)) {
                         break
