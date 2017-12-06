@@ -4,8 +4,8 @@ fun <T> Iterable<T>.bigrams(): List<Pair<T, T>> {
     return this.zip(this.drop(1))
 }
 
-fun <T> Iterable<T>.cartesianSquare(): List<Pair<T, T>> {
-    return this.zip(this)
+fun <T> List<T>.cartesianSquare(): List<Pair<T, T>> {
+    return this.flatMap { first -> this.map { first to it } }
 }
 
 fun <T> List<T>.isSuffixOf(other: List<T>): Boolean {
