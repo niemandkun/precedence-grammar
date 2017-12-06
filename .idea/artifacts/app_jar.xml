@@ -2,6 +2,9 @@
   <artifact type="jar" name="app:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/app</output-path>
     <root id="archive" name="app.jar">
+      <element id="directory" name="/META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/app/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="app" />
       <element id="module-output" name="grammar-lib" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jre7/1.1.51/8b5933578dc55f32cfc1a25f1db6371e4161fb8f/kotlin-stdlib-jre7-1.1.51.jar" path-in-jar="/" />
